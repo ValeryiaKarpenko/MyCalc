@@ -3,11 +3,13 @@ package com.example.it.mycalc;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
@@ -18,18 +20,19 @@ import static org.junit.Assert.*;
 public class CalcActivityTest {
 
     private MainActivity mActivity;
-    private MainActivity activityController;
+    private ActivityController<MainActivity> mActivityController;
 
     @Before
-    public void setup(){
-        mActivity = Robolectric.setupActivity(MainActivity.class);
-        assertNotNull(mActivity);
+    public void initTest() {
+        mActivityController = Robolectric.buildActivity(MainActivity.class).create().visible().start().resume();
+        mActivity = mActivityController.get();
+
     }
 
 
     @Test
     public void testCalculaor(){
-        activityController = Robolectric.buildActivity(MainActivity.class).create().start().resume().visible().get();
+
         EditText mFirstEditText = (EditText) mActivity.findViewById(R.id.first_value_edit_text);
         assertNotNull("", mFirstEditText);
 
@@ -58,6 +61,11 @@ public class CalcActivityTest {
 
         TextView mResultTextView = (TextView) mActivity.findViewById(R.id.result_text_view);
         assertNotNull("", mResultTextView);
+    }
+
+    @After
+    public void destroyActivity(){
+        mActivityController.pause().stop().destroy();
     }
 
 }
